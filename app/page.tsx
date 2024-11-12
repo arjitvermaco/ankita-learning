@@ -1,5 +1,9 @@
+import { Toaster } from "react-hot-toast";
+
 const HomePage = () => {
-  return <div>HomePage</div>;
+  return <div>
+    <Toaster />
+    HomePage</div>;
 };
 
 export default HomePage;
