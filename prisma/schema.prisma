@@ -20,3 +20,79 @@ model Task {
   createdAt DateTime @default(now())
   completed Boolean @default(false)
 }
+
+model User {
+  user_id    Int      @id @default(autoincrement())
+  name       String
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  orders     Order[]
+  cart       Cart?
+}
+
+model Product {
+  product_id Int      @id @default(autoincrement())
+  name       String
+  description String
+  price      Float
+  stock_level Int
+  category   Category @relation(fields: [categoryId], references: [category_id])
+  categoryId Int
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+}
+
+model Category {
+  category_id Int       @id @default(autoincrement())
+  name        String
+  description String
+  products    Product[]
+}
+
+model Order {
+  order_id    Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [user_id])
+  userId      Int
+  order_date  DateTime  @default(now())
+  total_amount Float
+  status      String
+  orderItems  OrderItem[]
+  payments    Payment[] @relation("OrderPayments")
+}
+
+model OrderItem {
+  order_item_id Int      @id @default(autoincrement())
+  order         Order    @relation(fields: [orderId], references: [order_id])
+  orderId       Int
+  product       Product  @relation(fields: [productId], references: [product_id])
+  productId     Int
+  quantity      Int
+  price         Float
+}
+
+model Payment {
+  payment_id         Int      @id @default(autoincrement())
+  order              Order    @relation(fields: [orderId], references: [order_id], name: "OrderPayments")
+  orderId            Int
+  amount             Float
+  payment_method     String
+  transaction_status String
+}
+
+model Cart {
+  cart_id   Int        @id @default(autoincrement())
+  user      User?      @relation(fields: [userId], references: [user_id])
+  userId    Int?       @unique
+  cartItems CartItem[]
+}
+
+model CartItem {
+  cart_item_id Int      @id @default(autoincrement())
+  cart         Cart     @relation(fields: [cartId], references: [cart_id])
+  cartId       Int
+  product      Product  @relation(fields: [productId], references: [product_id], onDelete: Cascade)
+  productId    Int
+  quantity     Int
+}
